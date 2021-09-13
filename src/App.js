@@ -5,14 +5,17 @@ import lottery from './lottery';
 
 
 class App extends Component {
-
-  constructor(props){
-    super(props);
-    this.state = { manager: ''};
+  state = { 
+    manager: '',
+    players: [],
+    balance: ''
   }
   async componentDidMount() {
     const manager = await lottery.methods.manager().call();
-    this.setState({ manager });
+    const players = await lottery.methods.getPlayers().call();
+    const balance = await web3.eth.getBalance(lottery.options.address);
+
+    this.setState({ manager, players, balance });
   }
 
   render() {
@@ -20,6 +23,7 @@ class App extends Component {
       <div className="App">
         <h1>Lottery Contract!</h1>
         <p>This contract is managed by {this.state.manager}</p>
+        <p>There are currently {this.state.players.length} people entered, competing to win {web3.utils.fromWei(this.state.balance, 'ether')} ether!</p>
       </div>
     );
   }
